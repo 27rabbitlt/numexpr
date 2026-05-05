@@ -1410,6 +1410,22 @@ class test_threading(TestCase):
 
         test_thread_safety_with_numexpr()
 
+    def test_multithreaded_no_zero_output(self):
+        """Regression test for issue #557.
+
+        Multithreaded evaluate() could intermittently return all-zero
+        output on Windows with many threads due to a race condition
+        in the parallel engine.
+        """
+        x = np.ones(1000000)
+        y = np.ones(1000000)
+        for i in range(500):
+            result = evaluate('x * y')
+            if np.all(result == 0):
+                self.fail(
+                    f"evaluate('x * y') returned all zeros at iteration {i} "
+                    f"(nthreads={numexpr.nthreads})")
+
 
 # The worker function for the subprocess (needs to be here because Windows
 # has problems pickling nested functions with the multiprocess module :-/)
