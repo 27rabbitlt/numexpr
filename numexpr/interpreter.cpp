@@ -800,12 +800,6 @@ vm_engine_iter_parallel(NpyIter *iter, const vm_params& params,
     th_params.ret_code = 0;
     th_params.pc_error = pc_error;
     th_params.errmsg = errmsg;
-    /* Reset the iterator to allocate its buffers (needed because
-       NPY_ITER_DELAY_BUFALLOC was used at creation time).  Without this,
-       NpyIter_Copy below may produce copies with incomplete state. */
-    if (NpyIter_Reset(iter, errmsg) != NPY_SUCCEED) {
-        goto end;
-    }
     th_params.iter[0] = iter;
     /* Make one copy for each additional thread */
     for (i = 1; i < gs.nthreads; ++i) {
